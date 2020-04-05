@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - lbnotes</title>
+    {% block js%}{% endblock %}
+    {% block css%}{% endblock %}
+</head>
+<body>
+    <div class="navigation">
+        <div class="search-bar">
+            <form action="{{ url_for('notes.search') }}" method="post">
+                <input type="text" name="keyword" required>
+                <input type="submit" value="search">
+            </form>
+        </div>
+        <div class="site-icon">lbnotes</div>
+        <div class="operations">
+            <a href="{{ url_for('notes.new_note') }}">write note</a>
+            <a href="{{ url_for('notes.list_notes') }}">all notes</a>
+        </div>
+        <div class="user-area">
+            {% if g.user == None %}
+                <a href="{{ url_for('auth.login') }}">login</a>
+                <a href="{{ url_for('auth.register') }}">register</a>
+            {% else %}
+                <a href="{{ url_for('auth.user_profile') }}">{{ g.user.username }}</a>
+                <a href="{{ url_for('auth.logout') }}">logout</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% block main %}{% endblock %}
+</body>
+</html>

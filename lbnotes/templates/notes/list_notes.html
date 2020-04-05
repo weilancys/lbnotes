@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}notes{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/list_notes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag.css') }}">
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="tags">
+            <ul>
+                <li class="tag-icon">
+                    <a href="{{ url_for('notes.list_notes') }}">no tags</a>
+                </li>
+                {% for tag in tags %}
+                    <li class="tag-icon">
+                        <a href="{{ url_for('notes.list_notes', tag=tag.name) }}">{{ tag.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="notes">
+            {% for note in notes %}
+                <div class="note">
+                    <p>title: <a href="{{ url_for('notes.view_note', note_id=note.id) }}">{{ note.title }}</a></p>
+                    <p class="note-body">{{ note.body[:200] + "\n..." }}</p>
+                    <p>{{ note.created_at }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        const note_bodies = document.querySelectorAll(".note-body");
+        for (const note_body of note_bodies) {
+            note_body.innerHTML = marked(note_body.innerHTML);
+        }
+    </script>
+{% endblock %}
+</html>

@@ -1,0 +1,17 @@
+.tag-icon {
+    border: solid 1px black;
+    background-color: greenyellow;
+    margin: 0.5rem;
+}
+
+.tag-icon-close {
+    color: #aaa;
+    font-weight: bold;
+}
+
+.tag-icon-close:hover,
+.tag-icon-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

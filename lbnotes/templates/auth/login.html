@@ -1,0 +1,33 @@
+{% extends "auth/auth_base.html" %}
+
+{% block title %}login{% endblock %}
+
+{% block main %}
+    <h3>login</h3>
+    <hr>
+    <form method="post">
+        <table>
+            <tr>
+                <td><label for="username">username:</label></td>
+                <td><input type="text" id="username" name="username" required></td>
+            </tr>
+            <tr>
+                <td><label for="password">password:</label></td>
+                <td><input type="password" id="password" name="password" required></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="login">
+                </td>
+            </tr>
+        </table>
+    </form>
+    <a href="{{ url_for('auth.register') }}">register</a>
+{% endblock %}
+
+{% block info %}
+    {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+{% endblock %}
+

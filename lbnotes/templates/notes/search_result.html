@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}search result{% endblock %}
+
+{% block main %}
+    <h3>found tags:</h3>
+    {% for tag in tags %}
+        <div class="div">
+            <p><a href="{{ url_for('notes.list_notes', tag=tag.name) }}">{{ tag.name }}</a></p>
+        </div>
+    {% else %}
+        <p>no tags found</p>
+    {% endfor %}
+    
+    <hr>
+    <h3>found notes:</h3>
+    {% for note in notes %}
+        <div class="div">
+            <p><a href="{{ url_for('notes.view_note', note_id=note.id) }}">{{ note.title }}</a></p>
+        </div>
+    {% else %}
+        <p>no notes found</p>
+    {% endfor %}
+{% endblock %}

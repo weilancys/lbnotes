@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}update note{% endblock %}
+
+{% block css %}
+    {{ simplemde.css }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag_chooser.css') }}">
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    {{ simplemde.js }}
+{% endblock %}
+
+{% block main %}
+    <h3>update note</h3>
+    <hr>
+    <form method="post" class="new-note-form">
+        <div class="form-field">
+            <input type="text" name="title" value="{{ note.title }}" required>
+        </div>
+        <div class="form-field">
+            <textarea name="body" id="editor">{{ note.body }}</textarea>
+        </div>
+        {% for tag in tags %}
+            <input type="hidden" class="tag-hidden-field" name="tags" value="{{ tag.id }}">
+        {% endfor %}
+        <div class="form-field">
+            <div class="tag-icons-display">
+                <span>tags: </span>
+                {% for tag in tags %}
+                    {% include "notes/snippets/tag_removable.html" %}
+                {% else %}
+                    <p>no tags</p>
+                {% endfor %}
+            </div>
+            <a href="#" id="a-open-tag-chooser">add a tag</a>
+        </div>
+        <div class="form-field">
+            <input type="submit" value="update">
+        </div>
+    </form>
+    {{ simplemde.load_id("editor") }}
+    {% include 'notes/snippets/tag_chooser.html' %}
+    <script src="{{ url_for('static', filename='js/notes/tag_chooser.js') }}"></script>
+    <script>
+        texts = document.querySelectorAll(".tag-icon .tag-icon-close");
+        for (const text of texts) {
+            bind_tag_close_event(text);
+        }
+    </script>
+{% endblock %}
