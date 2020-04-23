@@ -1,0 +1,17 @@
+.card {
+    width: 70%;
+    margin: 0 auto;
+    padding: 1em;
+}
+
+.card-text {
+    margin-top: 1em;
+}
+
+.operations {
+    margin-top: 1em;
+}
+
+.operations a {
+    margin: 0.2em;
+}

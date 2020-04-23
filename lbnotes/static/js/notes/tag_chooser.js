@@ -132,6 +132,8 @@ function add_tag_display(text, value) {
     if (!check_tag_icon_already_displayed(text)) {
         const tag = document.createElement("div");
         tag.classList.add("tag-icon");
+        tag.classList.add("badge");
+        tag.classList.add("badge-secondary");
         tag.dataset.id = value;
 
         const span_text = document.createElement("span");

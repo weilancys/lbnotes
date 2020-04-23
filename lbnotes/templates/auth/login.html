@@ -1,33 +1,28 @@
 {% extends "auth/auth_base.html" %}
 
-{% block title %}login{% endblock %}
+{% block title %}login - lbnotes{% endblock %}
 
-{% block main %}
-    <h3>login</h3>
-    <hr>
-    <form method="post">
-        <table>
-            <tr>
-                <td><label for="username">username:</label></td>
-                <td><input type="text" id="username" name="username" required></td>
-            </tr>
-            <tr>
-                <td><label for="password">password:</label></td>
-                <td><input type="password" id="password" name="password" required></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="login">
-                </td>
-            </tr>
-        </table>
-    </form>
-    <a href="{{ url_for('auth.register') }}">register</a>
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/login.css') }}">
 {% endblock %}
 
-{% block info %}
-    {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
+{% block content %}
+    <div class="container">
+        <form class="form-signin" method="post">
+            <h1 class="h2 mb-3 font-weight-normal text-center">lbnotes</h1>
+            <label for="username" class="sr-only">username</label>
+            <input id="username" name="username" type="text" class="form-control" placeholder="username..." required autofocus>
+            <label for="password" class="sr-only">password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="password..." required>
+            <input class="btn btn-primary btn-block" type="submit" value="login">
+        </form>
+        <a href="{{ url_for('auth.register') }}">register</a>
+        {% block info %}
+            {% include 'auth/snippets/info.html' %}
+        {% endblock %}
+    </div>
 {% endblock %}
+
+
 

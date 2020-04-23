@@ -31,7 +31,8 @@ class User(object):
             return None
         else:
             return User(row["id"], row["username"], row["password"])
-        
+
+FLASK_MESSAGE_TYPES = {"info": "info", "error": "error"}     
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -45,7 +46,7 @@ def login_required(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if g.user is None:
-            flash("please login first")
+            flash("please login first", FLASK_MESSAGE_TYPES["info"])
             next = request.url
             return redirect(url_for("auth.login", next=next))
         return func(*args, **kwargs)
@@ -80,11 +81,11 @@ def login():
         user = User.get_user_by_username(username)
 
         if g.user is not None:
-            flash(g.user.username + " has already logged in")
+            flash(g.user.username + " has already logged in", FLASK_MESSAGE_TYPES["error"])
         elif user is None:
-            flash("user does not exist")
+            flash("user does not exist", FLASK_MESSAGE_TYPES["error"])
         elif not check_password_hash(user.password, password):
-            flash("password incorrect")
+            flash("password incorrect", FLASK_MESSAGE_TYPES["error"])
         else:
             session["user_id"] = user._id
             login_successful = True
@@ -110,27 +111,28 @@ def register():
         password_1 = request.form.get("password_1", None)
         password_2 = request.form.get("password_2", None)
 
-        register_successful = False
+        register_info_valid = True
 
         if not username or not password_1 or not password_2:
-            flash("missing at least one field")
+            flash("missing at least one field", FLASK_MESSAGE_TYPES["error"])
+            register_info_valid = False
         
         if password_1 != password_2:
-            flash("passwords don't match")
+            flash("passwords don't match", FLASK_MESSAGE_TYPES["error"])
+            register_info_valid = False
 
-        db = get_db()
-        sql = "insert into users (username, password, created_at) values (?, ?, datetime())"
-        password = generate_password_hash(password_1)
-
-        try:
-            db.execute(sql, (username, password))
-            db.commit()
-            register_successful = True
-        except sqlite3.IntegrityError as e:
-            db.rollback()
-            flash("user already exists")
-
-        if register_successful:
+        if register_info_valid:
+            db = get_db()
+            sql = "insert into users (username, password, created_at) values (?, ?, datetime())"
+            password = generate_password_hash(password_1)
+            try:
+                db.execute(sql, (username, password))
+                db.commit()
+            except sqlite3.IntegrityError as e:
+                db.rollback()
+                flash("user already exists", FLASK_MESSAGE_TYPES["error"])
+                return redirect(url_for("auth.register"))
+            flash("user successfully registered!", "info")
             return redirect(url_for("auth.login"))
         else:
             return redirect(url_for("auth.register"))
@@ -142,7 +144,7 @@ def logout():
         g.user = None
     if "user_id" in session:
         session.clear()
-        flash("successfully logged out")
+        flash("successfully logged out", FLASK_MESSAGE_TYPES["info"])
     return redirect(url_for("auth.login"))
 
 

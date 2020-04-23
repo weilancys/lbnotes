@@ -1,25 +1,20 @@
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block title %}write note{% endblock %}
 
-{% block css %}
+{% block styles %}
+    {{ super() }}
     {{ simplemde.css }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag_chooser.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/new_note.css') }}">
 {% endblock %}
 
-{% block js %}
-    {{ simplemde.js }}
-{% endblock %}
-
-{% block main %}
+{% block content %}
     <div class="container">
-        <h3>new note</h3>
-        <hr>
         <form class="new-note-form" method="post">
             <div class="form-field">
-                <input type="text" name="title" required>
+                <input class="form-control" type="text" name="title" placeholder="title..." required>
             </div>
             <div class="form-field">
                 <textarea name="body" id="editor"></textarea>
@@ -31,11 +26,16 @@
                 <a href="#" id="a-open-tag-chooser">add a tag</a>
             </div>
             <div class="form-field">
-                <input type="submit" value="post">
+                <input class="form-control btn btn-secondary" type="submit" value="post">
             </div>
         </form>
+        {% include 'notes/snippets/tag_chooser.html' %}
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ simplemde.js }}
     {{ simplemde.load_id("editor") }}
-    {% include 'notes/snippets/tag_chooser.html' %}
     <script src="{{ url_for('static', filename='js/notes/tag_chooser.js') }}"></script>
 {% endblock %}

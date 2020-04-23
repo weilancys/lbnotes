@@ -2,3 +2,11 @@
     width: 70%;
     margin: 0 auto;
 }
+
+input[name="title"] {
+    margin-bottom: 1em;
+}
+
+input[value="post"] {
+    margin-top: 1em;
+}

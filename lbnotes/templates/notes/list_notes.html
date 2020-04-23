@@ -1,45 +1,65 @@
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block title %}notes{% endblock %}
 
-{% block css %}
+{% block styles %}
+    {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/list_notes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag.css') }}">
 {% endblock %}
 
-{% block js %}
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+{% block navbar %}
+    {{ super() }}
 {% endblock %}
 
-{% block main %}
+{% block content %}
     <div class="container">
-        <div class="tags">
-            <ul>
-                <li class="tag-icon">
-                    <a href="{{ url_for('notes.list_notes') }}">no tags</a>
-                </li>
-                {% for tag in tags %}
-                    <li class="tag-icon">
-                        <a href="{{ url_for('notes.list_notes', tag=tag.name) }}">{{ tag.name }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="notes">
-            {% for note in notes %}
-                <div class="note">
-                    <p>title: <a href="{{ url_for('notes.view_note', note_id=note.id) }}">{{ note.title }}</a></p>
-                    <p class="note-body">{{ note.body[:200] + "\n..." }}</p>
-                    <p>{{ note.created_at }}</p>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="tags">
+                    <ul>
+                        <li>
+                            <a class="tag-icon badge badge-secondary" href="{{ url_for('notes.list_notes') }}"><span class="tag-icon-text">all</span></a>
+                        </li>
+                        <li>
+                            <a class="tag-icon badge badge-secondary" href="{{ url_for('notes.list_notes', tag='no_tag') }}"><span class="tag-icon-text">no tags</span></a>
+                        </li>
+                        {% for tag in tags %}
+                            <li>
+                                <a class="tag-icon badge badge-secondary" href="{{ url_for('notes.list_notes', tag=tag.name) }}"><span class="tag-icon-text">{{ tag.name }}</span></a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
-            {% endfor %}
+            </div>
+            <div class="col-sm-9">
+                <div class="notes">
+                    {% for note in notes %}
+                        <div class="card note">
+                            <div class="card-body">
+                                <h3 class="card-title"><a href="{{ url_for('notes.view_note', note_id=note.id) }}">{{ note.title }}</a></h3>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ note.created_at }}</h6>
+                                {% if note.body|length > 200 %}
+                                    <div class="card-text note-body">{{ note.body[:500] + "\n..." }}</div>
+                                {% else %}
+                                    <div class="card-text note-body">{{ note.body }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if not loop.last %}
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-    <script>
-        const note_bodies = document.querySelectorAll(".note-body");
-        for (const note_body of note_bodies) {
-            note_body.innerHTML = marked(note_body.innerHTML);
-        }
-    </script>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='js/notes/list_notes.js') }}"></script>
 {% endblock %}
 </html>

@@ -27,11 +27,15 @@ def get_notes_of_user(user_id):
     return notes
 
 
-def get_notes_of_user_and_tag(user_id, tag_name):
-    tag = get_tag_by_name(tag_name)
+def get_notes_of_user_by_tag(user_id, tag_name):
     db = get_db()
-    sql = "select * from notes join relation_notes_tags as relation on notes.id = relation.note_id where relation.tag_id = ? and notes.author_id = ?;"
-    notes = db.execute(sql, (tag["id"], user_id)).fetchall()
+    if tag_name == "no_tag":
+        sql = "select * from notes where id not in (select distinct note_id from relation_notes_tags);"
+        notes = db.execute(sql).fetchall()
+    else:
+        tag = get_tag_by_name(tag_name) 
+        sql = "select * from notes join relation_notes_tags as relation on notes.id = relation.note_id where relation.tag_id = ? and notes.author_id = ?;"
+        notes = db.execute(sql, (tag["id"], user_id)).fetchall()
     return notes
 
 
@@ -153,7 +157,10 @@ def search_tag_by_keyword(keyword):
 def list_notes():
     tag_name = request.args.get("tag", None)
     if tag_name:
-        notes = get_notes_of_user_and_tag(g.user._id, tag_name)
+        if tag_name == "no_tag":
+            notes = get_notes_of_user_by_tag(g.user._id, tag_name)
+        else:
+            notes = get_notes_of_user_by_tag(g.user._id, tag_name)
     else:
         notes = get_notes_of_user(g.user._id)
     tags = get_tags_of_user(g.user._id)
@@ -211,7 +218,13 @@ def update_note(note_id):
         else:
             flash("update uncessful")
             return redirect(url_for("notes.update_note", note_id=note_id))
-        
+
+
+@bp.route("/<int:note_id>/delete_confirm")
+@login_required
+def delete_note_confirm(note_id):
+    return render_template("notes/delete_confirm.html", note_id=note_id)
+
 
 @bp.route("/<int:note_id>/delete", methods=["POST", ])
 @login_required
@@ -226,10 +239,10 @@ def delete_note(note_id):
         return redirect(url_for("notes.update_note", note_id=note_id))
 
 
-@bp.route("/search", methods=["POST", ])
+@bp.route("/search")
 @login_required
 def search():
-    keyword = request.form.get("keyword", None)
+    keyword = request.args.get("keyword", None)
     if keyword is None:
         abort(404)
     notes = search_note_by_keyword(keyword)

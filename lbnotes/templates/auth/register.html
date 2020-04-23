@@ -1,35 +1,26 @@
 {% extends "auth/auth_base.html" %}
 
-{% block title %}register{% endblock %}
+{% block title %}register - lbnotes{% endblock %}
 
-{% block main %}
-    <h3>register a new user</h3>
-    <hr>
-    <form method="post">
-        <table>
-            <tr>
-                <td><label for="username">username:</label></td>
-                <td><input type="text" id="username" name="username" required></td>
-            </tr>
-            <tr>
-                <td><label for="password_1">password:</label></td>
-                <td><input type="password" id="password_1" name="password_1" required></td>
-            </tr>
-            <tr>
-                <td><label for="password_2">retype password:</label></td>
-                <td><input type="password" id="password_2" name="password_2" required></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="register">
-                </td>
-            </tr>
-        </table>
-    </form>
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/register.css') }}">
 {% endblock %}
 
-{% block info %}
-    {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
+{% block content %}
+    <div class="container">
+        <form class="form-signup" method="post">
+            <h1 class="h3 mb-3 font-weight-normal text-center">register new user</h1>
+            <label for="username" class="sr-only">username</label>
+            <input id="username" name="username" type="text" class="form-control" placeholder="username..." required autofocus>
+            <label for="password_1" class="sr-only">password</label>
+            <input type="password" id="password_1" name="password_1" class="form-control" placeholder="password..." required>
+            <label for="password" class="sr-only">retype password</label>
+            <input type="password" id="password_2" name="password_2" class="form-control" placeholder="retype password..." required>
+            <input class="btn btn-primary btn-block" type="submit" value="register">
+        </form>
+        {% block info %}
+            {% include 'auth/snippets/info.html' %}
+        {% endblock %}
+    </div>
 {% endblock %}

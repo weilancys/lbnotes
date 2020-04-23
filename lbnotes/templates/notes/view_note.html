@@ -1,42 +1,46 @@
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block title %}{{ note.title }}{% endblock %}
 
-{% block css %}
+{% block styles %}
+    {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/view_note.css') }}">
 {% endblock %}
 
-{% block js %}
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-{% endblock %}
 
-{% block main %}
-    <h3>view a note</h3>
-    <hr>
-    <p>title: {{ note.title }}</p>
-    <p id="note-body">{{ note.body }}</p>
-    <p>{{ note.created_at }}</p>
-    <div class="tag-icons-display">
-        <span>tags: </span>
-        {% for tag in tags %}
-            {% include "notes/snippets/tag.html" %}
-        {% else %}
-            <p>no tags</p>
-        {% endfor %}
-    </div>
+{% block content %}
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">{{ note.title }}</h3>
+                <h6 class="card-subtitle mb-2 text-muted">{{ note.created_at }}</h6>
+                
+                <p id="note-body" class="card-text">{{ note.body }}</p>
 
-    {% if g.user and g.user._id == note.author_id %}
-        <div class="operations">
-            <form action="{{ url_for('notes.update_note', note_id=note.id) }}" method="get">
-                <input type="submit" value="update">
-            </form>
-            <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post">
-                <input type="submit" value="delete this note">
-            </form>
+                <div class="tag-icons-display">
+                    <span>tags: </span>
+                    {% for tag in tags %}
+                        {% include "notes/snippets/tag.html" %}
+                    {% else %}
+                        <p>no tags</p>
+                    {% endfor %}
+                </div>
+
+                {% if g.user and g.user._id == note.author_id %}
+                    <div class="operations">
+                        <a href="{{ url_for('notes.update_note', note_id=note.id) }}">update</a>
+                        <a href="{{ url_for('notes.delete_note_confirm', note_id=note.id) }}">delete</a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-    {% endif %}
-    <script>
-        const note_body = document.querySelector("#note-body");
-        note_body.innerHTML = marked(note_body.innerHTML);
-    </script>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='js/notes/view_note.js') }}"></script>
 {% endblock %}

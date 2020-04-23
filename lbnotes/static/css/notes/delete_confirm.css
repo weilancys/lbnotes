@@ -1,0 +1,7 @@
+input[type="submit"] {
+    margin: 1em;
+}
+
+form {
+    display: inline;
+}

@@ -1,4 +1,4 @@
-from flask import Blueprint, g, request, abort
+from flask import Blueprint, g, request, abort, render_template
 from lbnotes.auth import login_required, login_required_ajax
 from lbnotes.db import get_db
 import sqlite3
@@ -38,3 +38,8 @@ def create_tag():
     except Exception as e:
         db.rollback()
         return {"success": False, "tag": None, "reason": str(e)}
+
+
+@bp.route("/manage")
+def manage_tags():
+    return render_template("tags/manage.html")

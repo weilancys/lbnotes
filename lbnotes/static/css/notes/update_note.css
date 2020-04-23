@@ -1,0 +1,7 @@
+input[name="title"] {
+    margin-bottom: 1em;
+}
+
+input[value="update"] {
+    margin-top: 1em;
+}
