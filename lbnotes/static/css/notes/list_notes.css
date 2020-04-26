@@ -9,3 +9,8 @@
 .card-subtitle {
     margin-bottom: 1em;
 }
+
+.tag-icons-display .tag-icon {
+    font-size: 0.7em;
+    padding: 0.5em;
+}

@@ -1,0 +1,22 @@
+{% extends "base/base.html" %}
+
+{% block title %}update tag{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tags/update_tag.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <h4> rename the tag "{{ tag.name }}"</h4>
+        <form action="{{ url_for('tags.update', tag_id=tag.id) }}" method="POST">
+            <input id="tag_name" type="text" name="tag_name" placeholder="tag name.." required>
+            <input class="btn btn-primary" type="submit" value="update">
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}

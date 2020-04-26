@@ -11,6 +11,7 @@
 
 {% block content %}
     <div class="container">
+        {% include 'auth/snippets/info.html' %}
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title">{{ note.title }}</h3>
@@ -20,7 +21,7 @@
 
                 <div class="tag-icons-display">
                     <span>tags: </span>
-                    {% for tag in tags %}
+                    {% for tag in note.tags %}
                         {% include "notes/snippets/tag.html" %}
                     {% else %}
                         <p>no tags</p>

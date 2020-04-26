@@ -7,6 +7,11 @@
     font-size: 1.3em;
 }
 
+.tag-icon a {
+    text-decoration: none;
+    color: white;
+}
+
 .tag-icon-close {
     font-size: 1.5em;
     color: #aaa;

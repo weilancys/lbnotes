@@ -1,0 +1,20 @@
+{% extends "auth/auth_base.html" %}
+
+{% block title %}tag delete confirm{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tags/delete_confirm.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron text-center">
+        <h2>Are you sure to delete the tag "{{ tag.name }}"?</h2>
+        <form action="{{ url_for('tags.delete', tag_id=tag.id) }}" method="post">
+            <input class="btn btn-lg btn-danger" type="submit" value="Delete">
+        </form>
+        <a class="btn btn-lg btn-success" href="{{ url_for('tags.manage_tags', tag_id=tag.id) }}">Cancel</a>
+    </div>
+</div>
+{% endblock %}

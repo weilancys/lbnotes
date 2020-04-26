@@ -2,13 +2,16 @@
 
 {% block title %}search result{% endblock %}
 
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes/tag.css') }}">
+{% endblock %}
+
 {% block content %}
     <div class="container">
         <h3>found tags:</h3>
         {% for tag in tags %}
-            <div class="div">
-                <p><a href="{{ url_for('notes.list_notes', tag=tag.name) }}">{{ tag.name }}</a></p>
-            </div>
+            {% include "notes/snippets/tag.html" %}
         {% else %}
             <p>no tags found</p>
         {% endfor %}

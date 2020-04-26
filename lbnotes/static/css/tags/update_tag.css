@@ -1,0 +1,7 @@
+.container {
+    padding-top: 5em;
+}
+
+input[name="tag_name"] {
+    margin-right: 1em;
+}

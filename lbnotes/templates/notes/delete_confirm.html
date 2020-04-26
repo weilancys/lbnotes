@@ -10,11 +10,11 @@
 {% block content %}
     <div class="container">
         <div class="jumbotron text-center">
-            <h2>Are you sure to delete this note?</h2>
-            <form action="{{ url_for('notes.delete_note', note_id=note_id) }}" method="post">
+            <h2>Are you sure to delete the note "{{ note.title }}"?</h2>
+            <form action="{{ url_for('notes.delete_note', note_id=note.id) }}" method="post">
                 <input class="btn btn-lg btn-danger" type="submit" value="Delete">
             </form>
-            <a class="btn btn-lg btn-success" href="{{ url_for('notes.view_note', note_id=note_id) }}">Cancel</a>
+            <a class="btn btn-lg btn-success" href="{{ url_for('notes.view_note', note_id=note.id) }}">Cancel</a>
         </div>
     </div>
 {% endblock %}
