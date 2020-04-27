@@ -3,6 +3,9 @@ from flask import g, flash, redirect, Blueprint, session, request, render_templa
 from lbnotes.db import get_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from lbnotes.utils import FLASH_MESSAGE_TYPES, parse_db_time
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired
 import sqlite3
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -33,7 +36,12 @@ class User(object):
             return None
         else:
             return User(row["id"], row["username"], row["password"], parse_db_time(row["created_at"]))
-   
+
+
+class LoginForm(FlaskForm):
+    username = StringField('username', validators=[DataRequired()])
+    password = PasswordField('password', validators=[DataRequired()])
+
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -76,7 +84,7 @@ def login():
         login_successful = False
 
         if not username or not password:
-            flash("missing at least one field")
+            flash("missing at least one field", FLASH_MESSAGE_TYPES["error"])
             abort(400)
 
         user = User.get_user_by_username(username)

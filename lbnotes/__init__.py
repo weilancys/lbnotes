@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_wtf import CSRFProtect
 import os
 
 def create_app():
@@ -42,5 +43,8 @@ def create_app():
 
     # simplemde init
     notes.simple_mde.init_app(app)
+
+    # flask-wtf init
+    CSRFProtect(app)
 
     return app
