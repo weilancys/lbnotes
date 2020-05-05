@@ -13,6 +13,7 @@
 {% block content %}
     <div class="container">
         <form class="new-note-form" method="post">
+            {{ form.csrf_token }}
             <div class="form-field">
                 <input class="form-control" type="text" name="title" placeholder="title..." required>
             </div>

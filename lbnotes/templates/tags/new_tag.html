@@ -1,0 +1,23 @@
+{% extends "base/base.html" %}
+
+{% block title %}new tag{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tags/new_tag.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <h4> create a new tag </h4>
+        <form action="{{ url_for('tags.new_tag') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {{ form.name(placeholder="tag name...") }}
+            <input class="btn btn-primary" type="submit" value="create">
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}

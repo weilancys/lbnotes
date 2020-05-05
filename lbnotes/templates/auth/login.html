@@ -10,19 +10,18 @@
 {% block content %}
     <div class="container">
         <form class="form-signin" method="post">
+            {{ form.csrf_token }}
             <h1 class="h2 mb-3 font-weight-normal text-center">lbnotes</h1>
-            <label for="username" class="sr-only">username</label>
-            <input id="username" name="username" type="text" class="form-control" placeholder="username..." required autofocus>
-            <label for="password" class="sr-only">password</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="password..." required>
+            {{ form.username.label(class="sr-only") }}
+            {{ form.username(class='form-control', placeholder="username...", autofocus="") }}
+            {{ form.password.label(class="sr-only") }}
+            {{ form.password(class='form-control', placeholder="password...", autofocus="") }}
             <input class="btn btn-primary btn-block" type="submit" value="login">
         </form>
         <a href="{{ url_for('auth.register') }}">register</a>
         {% block info %}
             {% include 'auth/snippets/info.html' %}
+            {% include 'auth/snippets/form_errors.html' %}
         {% endblock %}
     </div>
 {% endblock %}
-
-
-

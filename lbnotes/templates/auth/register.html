@@ -1,6 +1,6 @@
 {% extends "auth/auth_base.html" %}
 
-{% block title %}register - lbnotes{% endblock %}
+{% block title %}register{% endblock %}
 
 {% block styles %}
     {{ super() }}
@@ -10,17 +10,19 @@
 {% block content %}
     <div class="container">
         <form class="form-signup" method="post">
+            {{ form.csrf_token }}
             <h1 class="h3 mb-3 font-weight-normal text-center">register new user</h1>
-            <label for="username" class="sr-only">username</label>
-            <input id="username" name="username" type="text" class="form-control" placeholder="username..." required autofocus>
-            <label for="password_1" class="sr-only">password</label>
-            <input type="password" id="password_1" name="password_1" class="form-control" placeholder="password..." required>
-            <label for="password" class="sr-only">retype password</label>
-            <input type="password" id="password_2" name="password_2" class="form-control" placeholder="retype password..." required>
+            {{ form.username.label(class="sr-only") }}
+            {{ form.username(class="form-control", placeholder="username...", autofocus="") }}
+            {{ form.password_1.label(class="sr-only") }}
+            {{ form.password_1(class="form-control", placeholder="password...") }}
+            {{ form.password_2.label(class="sr-only") }}
+            {{ form.password_2(class="form-control", placeholder="retype password...") }}
             <input class="btn btn-primary btn-block" type="submit" value="register">
         </form>
         {% block info %}
             {% include 'auth/snippets/info.html' %}
+            {% include 'auth/snippets/form_errors.html' %}
         {% endblock %}
     </div>
 {% endblock %}

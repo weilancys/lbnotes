@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from lbnotes.utils import FLASH_MESSAGE_TYPES, parse_db_time
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, EqualTo
 import sqlite3
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -39,8 +39,14 @@ class User(object):
 
 
 class LoginForm(FlaskForm):
-    username = StringField('username', validators=[DataRequired()])
-    password = PasswordField('password', validators=[DataRequired()])
+    username = StringField('username', validators=[DataRequired("username requried")])
+    password = PasswordField('password', validators=[DataRequired("password required")])
+
+
+class RegisterForm(FlaskForm):
+    username = StringField('username', validators=[DataRequired("username required")])
+    password_1 = PasswordField('password_1', validators=[DataRequired("password required")])
+    password_2 = PasswordField('password_2', validators=[DataRequired("please retype password"), EqualTo('password_1', "passwords don't match")])
 
 
 @bp.before_app_request
@@ -73,27 +79,18 @@ def login_required_ajax(func):
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        return render_template("auth/login.html")
-    elif request.method == "POST":
-        username = request.form.get("username", None)
-        password = request.form.get("password", None)
+    form = LoginForm()
+    next = request.args.get("next", None)
 
-        next = request.args.get("next", None)
-
+    if form.validate_on_submit():
         login_successful = False
 
-        if not username or not password:
-            flash("missing at least one field", FLASH_MESSAGE_TYPES["error"])
-            abort(400)
-
-        user = User.get_user_by_username(username)
-
+        user = User.get_user_by_username(form.username.data)
         if g.user is not None:
             flash(g.user.username + " has already logged in", FLASH_MESSAGE_TYPES["error"])
         elif user is None:
             flash("user does not exist", FLASH_MESSAGE_TYPES["error"])
-        elif not check_password_hash(user.password, password):
+        elif not check_password_hash(user.password, form.password.data):
             flash("password incorrect", FLASH_MESSAGE_TYPES["error"])
         else:
             session["user_id"] = user._id
@@ -109,42 +106,27 @@ def login():
                 return redirect(url_for("auth.login", next=next))
             else:
                 return redirect(url_for("auth.login"))
-        
+
+    return render_template("auth/login.html", form=form)
+
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "GET":
-        return render_template("auth/register.html")
-    elif request.method == "POST":
-        username = request.form.get("username", None)
-        password_1 = request.form.get("password_1", None)
-        password_2 = request.form.get("password_2", None)
-
-        register_info_valid = True
-
-        if not username or not password_1 or not password_2:
-            flash("missing at least one field", FLASH_MESSAGE_TYPES["error"])
-            register_info_valid = False
-        
-        if password_1 != password_2:
-            flash("passwords don't match", FLASH_MESSAGE_TYPES["error"])
-            register_info_valid = False
-
-        if register_info_valid:
-            db = get_db()
-            sql = "insert into users (username, password, created_at) values (?, ?, datetime())"
-            password = generate_password_hash(password_1)
-            try:
-                db.execute(sql, (username, password))
-                db.commit()
-            except sqlite3.IntegrityError as e:
-                db.rollback()
-                flash("user already exists", FLASH_MESSAGE_TYPES["error"])
-                return redirect(url_for("auth.register"))
-            flash("user successfully registered!", "info")
-            return redirect(url_for("auth.login"))
-        else:
+    form = RegisterForm()
+    if form.validate_on_submit():
+        db = get_db()
+        sql = "insert into users (username, password, created_at) values (?, ?, datetime())"
+        password = generate_password_hash(form.password_1.data)
+        try:
+            db.execute(sql, (form.username.data, password))
+            db.commit()
+        except sqlite3.IntegrityError as e:
+            db.rollback()
+            flash("user already exists", FLASH_MESSAGE_TYPES["error"])
             return redirect(url_for("auth.register"))
+        flash("user successfully registered!", "info")
+        return redirect(url_for("auth.login"))
+    return render_template("auth/register.html", form=form)
 
 
 @bp.route("/logout")

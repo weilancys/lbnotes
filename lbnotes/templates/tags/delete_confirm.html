@@ -12,6 +12,7 @@
     <div class="jumbotron text-center">
         <h2>Are you sure to delete the tag "{{ tag.name }}"?</h2>
         <form action="{{ url_for('tags.delete', tag_id=tag.id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input class="btn btn-lg btn-danger" type="submit" value="Delete">
         </form>
         <a class="btn btn-lg btn-success" href="{{ url_for('tags.manage_tags', tag_id=tag.id) }}">Cancel</a>

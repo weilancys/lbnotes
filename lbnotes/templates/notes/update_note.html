@@ -12,7 +12,12 @@
 
 {% block content %}
     <div class="container">
+        {% block info %}
+            {% include 'auth/snippets/info.html' %}
+            {% include 'auth/snippets/form_errors.html' %}
+        {% endblock %}
         <form method="post" class="new-note-form">
+            {{ form.csrf_token }}
             <div class="form-field">
                 <input class="form-control" type="text" name="title" value="{{ note.title }}" placeholder="title..." required>
             </div>
@@ -45,6 +50,9 @@
     {{ super() }}
     {{ simplemde.js }}
     {{ simplemde.load_id("editor") }}
+    <script>
+        const csrf_token = "{{ csrf_token() }}";
+    </script>
     <script src="{{ url_for('static', filename='js/notes/tag_chooser.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/notes/update_note.js') }}"></script>

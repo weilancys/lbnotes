@@ -4,6 +4,9 @@ from lbnotes.auth import login_required
 from lbnotes.db import get_db
 from lbnotes.utils import parse_db_time, FLASH_MESSAGE_TYPES
 from lbnotes.tags import Tag
+from flask_wtf import FlaskForm
+from wtforms import StringField, HiddenField, FieldList
+from wtforms.validators import DataRequired, Optional
 import sqlite3
 
 bp = Blueprint("notes", __name__, url_prefix="/notes")
@@ -39,6 +42,10 @@ class Note(object):
         """ add a new relationship from current note to a tag  """
         db = get_db()
         sql = "insert into relation_notes_tags (note_id, tag_id, created_at) values (?, ?, datetime());"
+
+        # check if tag belongs to current user
+        if not tag.belongs_to_user(g.user):
+            return False
         try:
             db.execute(sql, (self.id, tag.id))
             db.commit()
@@ -82,6 +89,10 @@ class Note(object):
             db.execute(sql, (title, body, self.id))
             self.unlink_all_tags()
             tags = Tag.get_tags_by_id_s(tag_id_s)
+            for tag in tags:
+                # get rid of tags that don't belong to current user.
+                if not tag.belongs_to_user(g.user):
+                    tags.remove(tag)
             for tag in tags:
                 if not self.link_tag(tag):
                     raise RuntimeError("tags insertion failed.")
@@ -171,6 +182,22 @@ class Note(object):
         return notes
 
 
+class NewNoteForm(FlaskForm):
+    title = StringField('title', validators=[DataRequired("title required")])
+    body = StringField('body', validators=[DataRequired("note body required")])
+    #tags = FieldList(HiddenField("tags", Optional()))
+
+
+class UpdateNoteForm(FlaskForm):
+    title = StringField('title', validators=[DataRequired("title required")])
+    body = StringField('body', validators=[DataRequired("note body required")])
+    #tags = FieldList(HiddenField("tags", Optional())
+
+
+class NoteDeleteConfirmForm(FlaskForm):
+    pass
+
+
 @bp.route("/")
 @login_required
 def list_notes():
@@ -193,19 +220,20 @@ def list_notes():
 @bp.route("/new", methods=["GET", "POST"])
 @login_required
 def new_note():
-    if request.method == "GET":
-        return render_template("notes/new_note.html")
-    elif request.method == "POST":
-        title = request.form.get("title", None)
-        body = request.form.get("body", None)
-        tags = request.form.getlist("tags") # a list of tag ids
-        if not title or not body:
-            abort(400)
-        new_note = Note.create(title, body, g.user._id, Tag.get_tags_by_id_s(tags))
-        if new_note is None:
-            abort(400)
-        else:
-            return redirect(url_for("notes.view_note", note_id=new_note.id))
+    new_note_form = NewNoteForm()
+    if new_note_form.validate_on_submit():
+        title = new_note_form.title.data
+        body = new_note_form.body.data
+        #tags = new_note_form.tags.data
+        tag_id_s = request.form.getlist("tags")
+        tags = Tag.get_tags_by_id_s(tag_id_s)
+        # make sure tags belong to user
+        for tag in tags:
+            if not tag.belongs_to_user(g.user):
+                tags.remove(tag)
+        new_note = Note.create(title, body, g.user._id, tags)
+        return redirect(url_for('notes.view_note', note_id=new_note.id))
+    return render_template("notes/new_note.html", form=new_note_form)
             
 
 @bp.route("/<int:note_id>")
@@ -222,36 +250,30 @@ def view_note(note_id):
 @bp.route("/<int:note_id>/update", methods=["GET", "POST"])
 @login_required
 def update_note(note_id):
-    if request.method == "GET":
-        note = Note.get_note_by_id(note_id)
-        return render_template("notes/update_note.html", note=note, tags=note.tags)
-    elif request.method == "POST":
-        title = request.form.get("title", None)
-        body = request.form.get("body", None)
+    form = UpdateNoteForm()
+    note = Note.get_note_by_id(note_id)
+    if note is None:
+        abort(404)
+    if form.validate_on_submit():
+        title = form.title.data
+        body = form.body.data
         tag_id_s = request.form.getlist("tags")
-
-        if not title or not body:
-            abort(404)
-
-        note = Note.get_note_by_id(note_id)
-        if note is None:
-            abort(404)
-
         if note.update(title, body, tag_id_s):
             flash("update successful", FLASH_MESSAGE_TYPES["info"])
             return redirect(url_for("notes.view_note", note_id=note.id))
         else:
-            flash("update uncessful", FLASH_MESSAGE_TYPES["info"])
-            return redirect(url_for("notes.update_note", note_id=note.id))
+            flash("update failed", FLASH_MESSAGE_TYPES["info"])
+    return render_template("notes/update_note.html", note=note, tags=note.tags, form=form)
 
 
 @bp.route("/<int:note_id>/delete_confirm")
 @login_required
 def delete_note_confirm(note_id):
     note = Note.get_note_by_id(note_id)
+    form = NoteDeleteConfirmForm()
     if note is None:
         abort(404)
-    return render_template("notes/delete_confirm.html", note=note)
+    return render_template("notes/delete_confirm.html", note=note, form=form)
 
 
 @bp.route("/<int:note_id>/delete", methods=["POST", ])

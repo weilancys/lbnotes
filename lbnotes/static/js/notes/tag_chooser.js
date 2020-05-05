@@ -31,6 +31,8 @@ btn_create_and_add.addEventListener("click", function(e) {
     // create a tag
     const xhr = new XMLHttpRequest();
     xhr.open("POST", document.location.origin + "/tags/create");
+    // const csrf_token = "{{ csrf_token() }}";
+    xhr.setRequestHeader("X-CSRFToken", csrf_token);
     xhr.responseType = "json";
     xhr.onload = function(e) {
         if (xhr.status === 400) {

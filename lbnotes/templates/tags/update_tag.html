@@ -11,6 +11,7 @@
     <div class="container text-center">
         <h4> rename the tag "{{ tag.name }}"</h4>
         <form action="{{ url_for('tags.update', tag_id=tag.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <input id="tag_name" type="text" name="tag_name" placeholder="tag name.." required>
             <input class="btn btn-primary" type="submit" value="update">
         </form>

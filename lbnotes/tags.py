@@ -1,6 +1,9 @@
 from flask import Blueprint, g, request, abort, render_template, flash, redirect, url_for
 from lbnotes.auth import login_required, login_required_ajax
 from lbnotes.db import get_db
+from flask_wtf import FlaskForm
+from wtforms import StringField
+from wtforms.validators import DataRequired
 import sqlite3
 from lbnotes.utils import parse_db_time, convert_to_time_str, FLASH_MESSAGE_TYPES
 
@@ -132,6 +135,10 @@ class Tag(object):
         return dictionary
 
 
+class NewTagForm(FlaskForm):
+    name = StringField('name', validators=[DataRequired("name required")])
+
+
 @bp.route("/")
 @login_required_ajax
 def list_tags():
@@ -142,8 +149,11 @@ def list_tags():
 @bp.route("/create", methods=["POST", ])
 @login_required_ajax
 def create_tag():
+    print("hit the route")
     tag_name = request.form.get("tag_name", None)
+    print(tag_name)
     if tag_name is None:
+        print("hit 400")
         abort(400)
     
     new_tag = Tag.create(tag_name, g.user)
@@ -159,10 +169,16 @@ def manage_tags():
     return render_template("tags/manage.html", tags=tags)
 
 
-@bp.route("/new")
+@bp.route("/new", methods=["GET", "POST"])
 @login_required
-def new_tag(parameter_list):
-    pass
+def new_tag():
+    form = NewTagForm()
+    if form.validate_on_submit():
+        tag_name = form.name.data
+        new_tag = Tag.create(tag_name, g.user)
+        flash("tag created successfully", FLASH_MESSAGE_TYPES["info"])
+        return redirect(url_for('tags.manage_tags'))
+    return render_template("tags/new_tag.html", form=form)
 
 
 @bp.route("<int:tag_id>/delete_confirm")
