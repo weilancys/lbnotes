@@ -33,8 +33,7 @@ def create_app():
     db.init_app(app)
 
     # register blueprints
-    from lbnotes import auth, setup, notes, tags
-    app.register_blueprint(setup.bp)
+    from lbnotes import auth, notes, tags
     app.register_blueprint(auth.bp)
     app.register_blueprint(notes.bp)
     app.register_blueprint(tags.bp)
