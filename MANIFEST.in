@@ -1,0 +1,4 @@
+include lbnotes/db_schema.sql
+graft lbnotes/static
+graft lbnotes/templates
+global-exclude *.pyc

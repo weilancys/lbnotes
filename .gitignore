@@ -2,3 +2,7 @@ venv/
 instance/
 __pycache__/
 .vscode/
+*.egg-info/
+build/
+dist/
+*.pyc
