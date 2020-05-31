@@ -2,7 +2,7 @@ from flask import Flask
 from flask_wtf import CSRFProtect
 import os
 
-def create_app():
+def create_app(testing=False):
     # app instance
     app = Flask(__name__, instance_relative_config=True)
 
@@ -20,8 +20,17 @@ def create_app():
         SIMPLEMDE_USE_CDN = False,
     )
 
-    # production config from config.py in instance folder
-    app.config.from_pyfile("config.py", silent=True)
+    if testing:
+        # testing config
+        app.config.update(
+            DATABASE = os.path.join(app.instance_path, "test_lbnotes.sqlite3"),
+            SECRET_KEY = "testing",
+            TESTING = True,
+            WTF_CSRF_ENABLED = False,
+        )
+    else:
+        # production config from config.py in instance folder
+        app.config.from_pyfile("config.py", silent=True)
 
     # a route to test app works
     @app.route("/hello")

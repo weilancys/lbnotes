@@ -149,11 +149,8 @@ def list_tags():
 @bp.route("/create", methods=["POST", ])
 @login_required_ajax
 def create_tag():
-    print("hit the route")
     tag_name = request.form.get("tag_name", None)
-    print(tag_name)
     if tag_name is None:
-        print("hit 400")
         abort(400)
     
     new_tag = Tag.create(tag_name, g.user)

@@ -1,0 +1,13 @@
+# this is the main config file for lbnotes
+# this file should be put in the instance folder and named exactly config.py
+# when in development, the instance folder resides beside the application package
+# when installed in a production environment, the instance folder is "{venv}/var/lbnotes-instance"
+
+import os
+
+# app config 
+SECRET_KEY = os.urandom(64)
+
+# simple mde config
+SIMPLEMDE_JS_IIFE = False
+SIMPLEMDE_USE_CDN = True

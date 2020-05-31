@@ -23,6 +23,19 @@ def init_app(app):
     app.cli.add_command(init_db)
 
 
+def generate_database():
+    script_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "db_schema.sql"
+    )
+    script = open(script_path)
+    db = sqlite3.connect(current_app.config["DATABASE"])
+    db.executescript(script.read())
+    db.commit()
+    db.close()
+    script.close()
+
+
 @click.command("init-db")
 @with_appcontext
 def init_db():
@@ -34,14 +47,5 @@ def init_db():
         else:
             os.unlink(current_app.config["DATABASE"])
 
-    script_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "db_schema.sql"
-    )
-    script = open(script_path)
-    db = sqlite3.connect(current_app.config["DATABASE"])
-    db.executescript(script.read())
-    db.commit()
-    db.close()
-    script.close()
+    generate_database()
     click.echo("sqlite3 database initialized.")

@@ -106,6 +106,8 @@ class Note(object):
 
     def remove(self):
         # remove the note from database and all its relationships with tags.
+        if not self.belongs_to_user(g.user):
+            abort(403)
         db = get_db()
         sql = "delete from notes where id = ?;"
         try:
