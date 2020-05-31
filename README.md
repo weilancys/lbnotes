@@ -32,8 +32,8 @@ flask run
 
 ### deploy:
 ```
-- lbnotes is os independent.
-- lbnotes can be deployed with any webserver that flask supports.
-- choose your webserver of choice and see its details for deployment.
-- [deploy references](https://flask.palletsprojects.com/en/1.1.x/deploying/)
+lbnotes is os independent.
+lbnotes can be deployed with any webserver that flask supports.
+choose your webserver of choice and see its details for deployment.
+[deploy references](https://flask.palletsprojects.com/en/1.1.x/deploying/)
 ```
